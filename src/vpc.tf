@@ -4,7 +4,7 @@ resource "aws_vpc" "main_vpc" {
   }
 }
 
-resource "aws_subnet" "us_east_1a_subnet" {
+resource "aws_subnet" "us_east_1a_public_subnet" {
   vpc_id                  = aws_vpc.main_vpc.id
   cidr_block              = var.us_east_1a_subnet_cidr_block
   map_public_ip_on_launch = true
@@ -20,4 +20,8 @@ resource "aws_internet_gateway" "internet_gateway" {
   tags = {
     Name = "main-igw"
   }
+}
+
+resource "aws_route_table" "public_route_table" {
+  vpc_id = aws_vpc.main_vpc.id
 }
