@@ -48,5 +48,5 @@ resource "aws_instance" "neon_bot_main_server" {
 }
 
 output "server_dns" {
-  value = aws_instance.main_server.public_dns
+  value = aws_instance.neon_bot_main_server.public_dns
 }
