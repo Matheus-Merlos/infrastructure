@@ -15,6 +15,10 @@ on:
         required: true
         type: number
 
+      ecr-registry:
+        required: true
+        type: string
+
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -51,5 +55,5 @@ jobs:
           context: .
           file: ./Dockerfile
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.image-name }}:latest
+            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-registry}}:latest
           push: true
