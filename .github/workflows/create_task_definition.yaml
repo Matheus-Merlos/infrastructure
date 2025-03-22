@@ -79,6 +79,7 @@ jobs:
       - name: Get account_id
         id: get_account
         run: |
+          echo $(aws sts get-caller-identity)
           account_id=$(aws sts get-caller-identity --query "Account" --output text)
           echo "::set-output name=id::$account_id"
 
