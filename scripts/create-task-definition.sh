@@ -1,7 +1,6 @@
 #!/bin/bash
 
 function create_task_definition() {
-
     local task_name=$1
     local efs_id=$6
     local execution_role_arn=$7
@@ -18,7 +17,6 @@ function create_task_definition() {
 
     env_vars=$(echo "$env_vars" | sed 's/,$//')
 
-    # Define a task definition no ECS
     aws ecs register-task-definition \
         --family "$task_name" \
         --network-mode awsvpc \
