@@ -22,3 +22,7 @@ variable "public_subnets" {
   type        = list(string)
   description = "The subnets of the service"
 }
+
+variable "subnets_cidr_blocks" {
+  type = list(string)
+}
