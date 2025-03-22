@@ -57,3 +57,40 @@ jobs:
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.ecr-registry }}:${{ inputs.image-name }}
           push: true
+
+  create-task-definition:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Get account_id
+        id: get_account
+        run: |
+          account_id=$(aws sts get-caller-identity --query "Account" --output text)
+          echo "::set-output name=id::$account_id"
+
+
+      - name: Create Task Definition
+        run: |
+          chmod +x ./scripts/create-task-definition.sh
+          source ./scripts/create-task-definition.sh
+
+          echo ${{ secrets.DOTENV_CONTENT }} > .env
+
+          create_task_definition ${{ inputs.image-name }} \
+            ${{ inputs.cpu }} \
+            ${{ inputs.memory }} \
+            ${{ steps.get_account.outputs.id }}.dkr.ecr.eu-central-1.amazonaws.com/${{ inputs.ecr-registry }}:${{ inputs.image-name }} \
+            .env \
+            ${{ secrets.EFS_ID }} \
+            ${{ secrets.EXECUTION_ROLE_ARN }} \
+            ${{ secrets.TASK_ROLE_ARN }}

@@ -1,18 +1,12 @@
 #!/bin/bash
 
 function create_task_definition() {
-    terraform apply -refresh-only -auto-approve
 
     local task_name=$1
-    local efs_id=$(terraform output -raw efs_id)
-    local execution_role_arn=$(terraform output -raw execution_role_arn)
-    local task_role_arn=$(terraform output -raw task_role_arn)
+    local efs_id=$6
+    local execution_role_arn=$7
+    local task_role_arn=$8
     local env_file=$5
-
-    if [[ -z "$efs_id" || -z "$execution_role_arn" || -z "$task_role_arn" ]]; then
-        echo "Error getting terraform variables."
-        exit 1
-    fi
 
     local env_vars=""
     while IFS='=' read -r key value; do
