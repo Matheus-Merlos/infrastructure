@@ -88,15 +88,13 @@ jobs:
           chmod +x ./scripts/create-task-definition.sh
           source ./scripts/create-task-definition.sh
 
-          echo $(aws sts get-caller-identity)
-
-          echo ${{ secrets.DOTENV_CONTENT }} > .env
+          echo ${{ secrets.DOTENV_CONTENT }} > secrets.txt
 
           create_task_definition ${{ inputs.image-name }} \
             ${{ inputs.cpu }} \
             ${{ inputs.memory }} \
             ${{ steps.get_account.outputs.id }}.dkr.ecr.eu-central-1.amazonaws.com/${{ inputs.ecr-registry }}:${{ inputs.image-name }} \
-            .env \
+            secrets.txt \
             ${{ secrets.EFS_ID }} \
             ${{ secrets.EXECUTION_ROLE_ARN }} \
             ${{ secrets.TASK_ROLE_ARN }}
