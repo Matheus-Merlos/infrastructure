@@ -33,3 +33,8 @@ resource "aws_efs_mount_target" "container_efs_mounts" {
   subnet_id       = aws_subnet.us_east_1a_public_subnet.id
   security_groups = [aws_security_group.container_efs_sg.id]
 }
+
+output "efs_id" {
+  value     = aws_efs_file_system.container_efs.id
+  sensitive = true
+}
