@@ -5,7 +5,7 @@ resource "aws_iam_user" "dns_checker" {
   name = "dns-checker"
 
   lifecycle {
-    ignore_changes = [ tags ]
+    ignore_changes = [tags]
   }
 }
 
@@ -28,7 +28,7 @@ data "aws_iam_policy_document" "dns_checker_policy" {
     actions = [
       "ec2:Describe*"
     ]
-    resources = [ "*" ]
+    resources = ["*"]
   }
 }
 
@@ -50,7 +50,7 @@ resource "aws_iam_user" "image_upload" {
   name = "image-upload"
 
   lifecycle {
-    ignore_changes = [ tags ]
+    ignore_changes = [tags]
   }
 }
 
