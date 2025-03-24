@@ -1,0 +1,44 @@
+name: 'Get Neon Bot instance DNS'
+
+on:
+  workflow_call:
+    secrets:
+      TERRAFORM_AWS_ACCESS_KEY_ID:
+        required: true
+
+      TERRAFORM_AWS_SECRET_ACCESS_KEY:
+        required: true
+
+jobs:
+  get-server-dns:
+    runs-on: ubuntu-latest
+    outputs:
+      server-dns: ${{ steps.define_variable.outputs.server_dns }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.TERRAFORM_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.TERRAFORM_AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: 'us-east-1'
+      AWS_EC2_METADATA_DISABLED: 'true'
+
+    steps:
+      - name: Bring code to container
+        uses: actions/checkout@v4
+        with:
+          repository: Matheus-Merlos/infrastructure
+          ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.5
+
+      - name: Get current server DNS and export to a variable
+        id: define_variable
+        run: |
+          cd src
+
+          terraform init
+
+          terraform apply -refresh-only -auto-approve -target=aws_instance.neon_bot_main_server
+          echo "server_dns=$(terraform output -raw server_dns)" >> $GITHUB_OUTPUT

@@ -26,7 +26,8 @@ data "aws_iam_policy_document" "dns_checker_policy" {
   statement {
     effect = "Allow"
     actions = [
-      "ec2:Describe*"
+      "ec2:Describe*",
+      "ec2:List*"
     ]
     resources = ["*"]
   }
