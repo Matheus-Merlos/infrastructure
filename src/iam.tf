@@ -18,8 +18,8 @@ data "aws_iam_policy_document" "dns_checker_policy" {
       "s3:Get*"
     ]
     resources = [
-      "arn:aws:s3:::tf-neon-bot-terraform-remote-state",
-      "arn:aws:s3:::tf-neon-bot-terraform-remote-state/*"
+      "arn:aws:s3:::azure-infrastructure-terraform-remote-state",
+      "arn:aws:s3:::azure-infrastructure-terraform-remote-state/*"
     ]
   }
 
