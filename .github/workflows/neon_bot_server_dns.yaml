@@ -1,4 +1,4 @@
-name: 'Get Neon Bot instance DNS'
+name: Get Neon Bot instance DNS
 
 on:
   workflow_call:
@@ -8,6 +8,10 @@ on:
 
       TERRAFORM_AWS_SECRET_ACCESS_KEY:
         required: true
+
+    outputs:
+      server-dns:
+        value: ${{ jobs.get-server-dns.outputs.server-dns }}
 
 jobs:
   get-server-dns:
