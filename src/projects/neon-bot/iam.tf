@@ -11,17 +11,10 @@ data "aws_iam_policy_document" "db_user_policy" {
   statement {
     effect = "Allow"
     actions = [
-      "dynamodb:ListTables",
-      "dynamodb:DescribeTable",
-      "dynamodb:PutItem",
-      "dynamodb:GetItem",
-      "dynamodb:UpdateItem",
-      "dynamodb:DeleteItem",
-      "dynamodb:Query",
-      "dynamodb:Scan"
+      "rds-db:connect"
     ]
     resources = [
-      "*"
+      "arn:aws:rds-db:us-east-1:${data.aws_caller_identity.this.account_id}:dbuser:${aws_db_instance.neon_bot_postgresql.id}/iam_user"
     ]
   }
 }
