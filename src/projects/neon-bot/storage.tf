@@ -1,17 +1,44 @@
-resource "aws_dynamodb_table" "neon_bot_table_players" {
-  name         = "neon-bot-players"
-  billing_mode = "PAY_PER_REQUEST"
+resource "random_string" "postgresql_password" {
+  length  = 16
+  special = false
+}
 
-  hash_key  = "playerId"
-  range_key = "guildId"
+resource "aws_db_subnet_group" "neon_bot_subnet_group" {
+  name = "neon-bot-subnet-group"
+  subnet_ids = var.private_subnet_ids
 
-  attribute {
-    name = "playerId"
-    type = "S"
+  tags = {
+    Name = "neon-bot-subnet-group"
   }
+}
 
-  attribute {
-    name = "guildId"
-    type = "N"
-  }
+resource "aws_db_instance" "neon_bot_postgresql" {
+  identifier = "postgres-neon-bot"
+
+  vpc_security_group_ids = [ aws_security_group.postgresql_sg.id ]
+  db_subnet_group_name   = aws_db_subnet_group.neon_bot_subnet_group.name
+
+  engine               = "postgres"
+  engine_version       = "15.12"
+  instance_class       = "db.t4g.micro"
+  parameter_group_name = "default.postgres15"
+
+  allocated_storage = 20
+  storage_type      = "gp2"
+
+  username                            = "postgres"
+  password                            = random_string.postgresql_password.result
+  iam_database_authentication_enabled = true
+
+  storage_encrypted   = false
+  publicly_accessible = true
+  skip_final_snapshot = true
+  multi_az            = false
+
+  backup_retention_period  = 0
+  delete_automated_backups = true
+
+  performance_insights_enabled = false
+  monitoring_interval          = 0
+  apply_immediately            = true
 }
