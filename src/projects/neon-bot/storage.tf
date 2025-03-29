@@ -1,5 +1,5 @@
 resource "random_string" "postgresql_password" {
-  length  = 16
+  length  = 32
   special = false
 }
 
@@ -12,6 +12,22 @@ resource "aws_db_subnet_group" "neon_bot_subnet_group" {
   }
 }
 
+resource "aws_db_parameter_group" "neon_bot_postgresql_parameter_group" {
+  name   = "neon-bot-postgresql-parameter-group"
+  family = "postgres15"
+
+  parameter {
+    name  = "rds.force_ssl"
+    value = "0"
+  }
+
+  parameter {
+    name         = "max_connections"
+    value        = "6"
+    apply_method = "pending-reboot"
+  }
+}
+
 resource "aws_db_instance" "neon_bot_postgresql" {
   identifier = "postgres-neon-bot"
 
@@ -21,14 +37,13 @@ resource "aws_db_instance" "neon_bot_postgresql" {
   engine               = "postgres"
   engine_version       = "15.12"
   instance_class       = "db.t4g.micro"
-  parameter_group_name = "default.postgres15"
+  parameter_group_name = aws_db_parameter_group.neon_bot_postgresql_parameter_group.name
 
   allocated_storage = 20
   storage_type      = "gp2"
 
-  username                            = "postgres"
-  password                            = random_string.postgresql_password.result
-  iam_database_authentication_enabled = true
+  username = "postgres"
+  password = random_string.postgresql_password.result
 
   storage_encrypted   = false
   publicly_accessible = true
