@@ -17,9 +17,13 @@ resource "aws_iam_policy" "stop_start_ec2_policy" {
       {
         Effect = "Allow"
         Action = [
-          "ec2:Start*",
-          "ec2:Stop*",
-          "ec2:DescribeInstances*"
+          "ec2:DescribeInstances",
+          "ec2:StopInstances",
+          "ec2:StartInstances",
+          "rds:DescribeDBInstances",
+          "rds:ListTagsForResource",
+          "rds:StopDBInstance",
+          "rds:StartDBInstance"
         ]
         Resource = "*"
       }
@@ -59,7 +63,7 @@ resource "aws_lambda_function" "stop_ec2_lambda" {
 
   runtime     = "python3.9"
   memory_size = 250
-  timeout     = 60
+  timeout     = 300
 }
 
 resource "aws_lambda_function" "start_ec2_lambda" {
@@ -71,7 +75,7 @@ resource "aws_lambda_function" "start_ec2_lambda" {
 
   runtime     = "python3.9"
   memory_size = 250
-  timeout     = 60
+  timeout     = 300
 }
 
 resource "aws_cloudwatch_event_rule" "ec2_stop_rule" {

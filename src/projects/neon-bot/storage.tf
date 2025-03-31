@@ -56,4 +56,8 @@ resource "aws_db_instance" "neon_bot_postgresql" {
   performance_insights_enabled = false
   monitoring_interval          = 0
   apply_immediately            = true
+
+  tags = {
+    Auto-Start = true
+  }
 }
