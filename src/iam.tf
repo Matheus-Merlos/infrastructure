@@ -80,3 +80,56 @@ resource "aws_iam_user_policy_attachment" "image_upload_policy_attachment" {
   user       = aws_iam_user.image_upload.name
   policy_arn = aws_iam_policy.image_upload_policy.arn
 }
+
+
+
+
+
+
+
+resource "aws_iam_user" "fds_terraform_backend_user" {
+  name = "FDSTerraformBackend"
+
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
+data "aws_iam_policy_document" "fds_terraform_policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket",
+      "s3:PutObject",
+      "s3:Get*"
+    ]
+    resources = [
+      "arn:aws:s3:::fds-terraform-state",
+      "arn:aws:s3:::fds-terraform-state/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "fds_terraform_policy" {
+  name   = "FDSTerraformPolicy"
+  policy = data.aws_iam_policy_document.fds_terraform_policy.json
+}
+
+resource "aws_iam_user_policy_attachment" "fds_terraform_attachment" {
+  user       = aws_iam_user.fds_terraform_backend_user.name
+  policy_arn = aws_iam_policy.fds_terraform_policy.arn
+}
+
+resource "aws_iam_access_key" "fds_terraform_access_key" {
+  user = aws_iam_user.fds_terraform_backend_user.name
+}
+
+
+output "fds_terraform_access_key_id" {
+  value = aws_iam_access_key.fds_terraform_access_key.id
+}
+
+output "fds_terraform_secret_access_key" {
+  value     = aws_iam_access_key.fds_terraform_access_key.secret
+  sensitive = true
+}
