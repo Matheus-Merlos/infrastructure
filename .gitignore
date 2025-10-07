@@ -4,3 +4,6 @@
 .terraform
 
 *.sql
+
+sensitive.auto.tfvars
+*.pem

@@ -7,3 +7,8 @@ variable "us_east_1b_subnet_cidr_block" {
   type    = string
   default = null
 }
+
+variable "digitalocean_token" {
+  type    = string
+  default = null
+}
