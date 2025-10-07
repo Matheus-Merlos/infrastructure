@@ -1,0 +1,32 @@
+name: Neon bot backups
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  backup-and-save:
+    name: Backup do banco de dados
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configurar credenciais da AWS
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-access-key-id: ${{ secrets.NEON_BOT_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{ secrets.NEON_BOT_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Criar Dump do banco e compactar com gunzip
+        run: |
+          PGPASSWORD=${{ secrets.NEON_BOT_DATABASE_PASSWORD }} \
+          pg_dump -U ${{ secrets.NEON_BOT_DATABASE_USER }} \
+          -h ${{ secrets.NEON_BOT_DATABASE_HOST }} \
+          -d ${{ secrets.NEON_BOT_DATABASE_NAME }} \
+          -F p --no-comments --no-owner --no-privileges \
+          | grep -vE '^--' | grep -vE '^$' \
+          | gzip > dump.sql.gz
+
+      - name: Enviar Dump para o bucket S3
+        run: aws s3 cp dump.sql.gz s3://${{ secrets.NEON_BOT_DUMP_BUCKET_NAME }}/dump_$(date +%F).sql.gz
+
